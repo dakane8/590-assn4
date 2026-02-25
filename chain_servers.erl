@@ -6,7 +6,7 @@
 start() ->
     io:format("~nStarting chain of server processes...~n"),
     
-    Pid3 = spawn(fun() -> serv3(0) end),
+    Pid3 = spawn(fun() -> serv3() end),
     Pid2 = spawn(fun() -> serv2(Pid3) end),
     Pid1 = spawn(fun() -> serv1(Pid2) end),
     
@@ -52,11 +52,11 @@ serv1(NextPid) ->
             io:format("(serv1) ~p * ~p = ~p~n", [X, Y, X * Y]),
             serv1(NextPid);
         
-        {divide, X, Y} when is_number(X), is_number(Y), Y =/= 0 ->
+        {'div', X, Y} when is_number(X), is_number(Y), Y =/= 0 ->
             io:format("(serv1) ~p / ~p = ~p~n", [X, Y, X / Y]),
             serv1(NextPid);
-        
-        {divide, X, 0} when is_number(X) ->
+
+        {'div', X, Y} when is_number(X), is_number(Y), Y == 0 ->
             io:format("(serv1) Division by zero error: ~p / 0~n", [X]),
             serv1(NextPid);
         
@@ -121,17 +121,20 @@ product_numbers([_H|T], Acc) ->
     product_numbers(T, Acc).
 
 
-serv3(Count) ->
+serv3() ->
+    serv3_loop(0).
+
+serv3_loop(Count) ->
     receive
         halt ->
             io:format("(serv3) Total unhandled messages: ~p~n", [Count]),
             io:format("(serv3) Halting.~n");
-        
+
         {error, ErrorMsg} ->
             io:format("(serv3) Error: ~p~n", [ErrorMsg]),
-            serv3(Count);
-        
+            serv3_loop(Count);
+
         Msg ->
             io:format("(serv3) Not handled: ~p~n", [Msg]),
-            serv3(Count + 1)
+            serv3_loop(Count + 1)
     end.
