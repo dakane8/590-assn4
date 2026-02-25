@@ -16,7 +16,6 @@ start() ->
     message_loop(Pid1).
 
 
-%% reads user input and sends to serv1
 message_loop(Pid1) ->
     io:format("Enter message: "),
     case io:read("") of
@@ -34,7 +33,6 @@ message_loop(Pid1) ->
     end.
 
 
-%% serv1 - handles arithmetic operations
 serv1(NextPid) ->
     receive
         halt ->
@@ -80,7 +78,6 @@ serv1(NextPid) ->
     end.
 
 
-%% serv2 - handles lists w numeric heads
 serv2(NextPid) ->
     receive
         halt ->
@@ -124,7 +121,6 @@ product_numbers([_H|T], Acc) ->
     product_numbers(T, Acc).
 
 
-%% serv3 - handles errors and counts unhandled messages
 serv3(Count) ->
     receive
         halt ->
